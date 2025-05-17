@@ -1,0 +1,19 @@
+{
+  "name": "zevent",
+  "version": "1.0.0",
+  "description": "Areed Task",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ammar-mahmoud/Areeb-Task.git"
+  },
+  "author": "Ammar Aglan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ammar-mahmoud/Areeb-Task/issues"
+  },
+  "homepage": "https://github.com/Ammar-mahmoud/Areeb-Task#readme"
+}
