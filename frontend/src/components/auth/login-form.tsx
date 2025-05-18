@@ -128,14 +128,14 @@ export function LoginForm() {
                 (!isValid || loading) && "bg-neutral-200"
               }`}
             >
-              {loading ? <FontAwesomeIcon icon={faSpinner} /> : "Signup"}
+              {loading ? <FontAwesomeIcon icon={faSpinner} /> : "Login"}
             </Button>
             <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border"></div>
           </div>
           <div className="text-center text-sm">
             Don&apos;t have an account?{" "}
             <a href="/auth/sign-up" className="underline underline-offset-4">
-              Login
+              Sign up
             </a>
           </div>
         </Form>
