@@ -10,8 +10,7 @@ exports.createEvent = asyncHandler(async (req, res, next) => {
   if (req.file) {
     const imageKey = await uploadFileToS3(req.file, "events");
     req.body.image = imageKey; // inject image key
-  }
-  else {
+  } else {
     return next(new ApiError(`No file founded`, 404));
   }
 
@@ -20,48 +19,59 @@ exports.createEvent = asyncHandler(async (req, res, next) => {
 
 // Read single event (excludes soft deleted)
 exports.getEvent = asyncHandler(async (req, res, next) => {
-  const baseHandler = factory.getOne(Event, "Event",{ path: "category" });
+  const { id } = req.params;
 
-  await baseHandler(req, res, async () => {
-    if (!req.user) return; // skip if not authenticated
+  const query = Event.findOne({ _id: id }).populate("category");
+  const event = await query.exec();
 
+  if (!event) {
+    return next(new ApiError(`No event found with ID ${id}`, 404));
+  }
+
+  let isBooked = false;
+
+  if (req.user) {
     const userId = req.user._id;
     const bookedEvents = await Booking.find({ user: userId }).distinct("event");
+    isBooked = bookedEvents.includes(event._id.toString());
+  }
 
-    res.json({
+  res.status(200).json({
+    data: {
       // eslint-disable-next-line node/no-unsupported-features/es-syntax
-      ...res.locals.responsePayload,
-      data: {
-        // eslint-disable-next-line node/no-unsupported-features/es-syntax
-        ...res.locals.responsePayload.data,
-        isBooked: bookedEvents.includes(res.locals.responsePayload.data._id),
-      },
-    });
+      ...event.toObject(),
+      isBooked,
+    },
   });
 });
 
 exports.clientGetAllEvents = asyncHandler(async (req, res, next) => {
-  const baseHandler = factory.getAll(Event, "Event", true, { path: "category" });
+  const filter = { deletedAt: null };
 
-  await baseHandler(req, res, async () => {
-    if (!req.user) return; // skip if not authenticated
+  const events = await Event.find(filter).populate("category");
 
-    const userId = req.user._id;
-    const bookedEvents = await Booking.find({ user: userId }).distinct("event");
+  let bookedEvents = [];
 
-    // Inject isBooked to each event
-    res.json({
+  if (req.user) {
+    bookedEvents = await Booking.find({ user: req.user._id }).distinct("event");
+    bookedEvents = bookedEvents.map((id) => id.toString());
+  }
+
+  const data = events.map((eventDoc) => {
+    const event = typeof eventDoc.toObject === "function" ? eventDoc.toObject() : eventDoc;
+
+    return {
       // eslint-disable-next-line node/no-unsupported-features/es-syntax
-      ...res.locals.responsePayload,
-      data: res.locals.responsePayload.data.map((event) => ({
-        // eslint-disable-next-line node/no-unsupported-features/es-syntax
-        ...event,
-        isBooked: bookedEvents.includes(event._id),
-      })),
-    });
+      ...event,
+      isBooked: bookedEvents.includes(event._id.toString()),
+    };
+  });
+
+  res.status(200).json({
+    results: data.length,
+    data,
   });
 });
-
 
 // ✅ Update event (only if not soft deleted)
 exports.updateEvent = asyncHandler(async (req, res, next) => {
@@ -69,7 +79,6 @@ exports.updateEvent = asyncHandler(async (req, res, next) => {
     const imageKey = await uploadFileToS3(req.file, "events");
     req.body.image = imageKey;
   }
-
 
   return factory.updateOne(Event)(req, res, next);
 });

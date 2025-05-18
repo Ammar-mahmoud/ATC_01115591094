@@ -28,19 +28,6 @@ const {
 
 /**
  * @swagger
- * /events/admin:
- *   get:
- *     summary: Admin - Get all events including deleted ones
- *     tags: [Events]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Admin view of all events
- */
-
-/**
- * @swagger
  * /events:
  *   post:
  *     summary: Admin - Create new event

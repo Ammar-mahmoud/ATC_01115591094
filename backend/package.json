@@ -9,9 +9,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Ammar-mahmoud/Zevent-backend.git"
+    "url": "git+https://github.com/Ammar-mahmoud/Areeb-Task.git"
   },
-  "author": "Ammar Mahmoud",
+  "author": "Ammar Aglan",
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.1692.0",

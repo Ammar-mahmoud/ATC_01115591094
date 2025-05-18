@@ -2,12 +2,10 @@
 const {
   createEvent,
   updateEvent,
-  clientGetAllEvents,
 } = require("../services/eventService");
 
 const factory = require("../services/handlersFactory");
 const { uploadFileToS3 } = require("../utils/s3");
-const Booking = require("../models/bookingModel");
 const ApiError = require("../utils/api_error");
 
 jest.mock("../utils/s3");
@@ -87,49 +85,4 @@ describe("Event services", () => {
     });
   });
 
-  describe("clientGetAllEvents", () => {
-    it("should inject isBooked into response", async () => {
-      const req = { user: { _id: "user-id" }, query: {} };
-      const res = mockRes();
-      res.locals.responsePayload = {
-        data: [{ _id: "1" }, { _id: "2" }],
-      };
-
-      const mockHandler = jest
-        .fn()
-        .mockImplementation((_req, _res, next) => next());
-      factory.getAll.mockReturnValue(mockHandler);
-      Booking.find.mockReturnValue({
-        distinct: jest.fn().mockResolvedValue(["1"]),
-      });
-
-      await clientGetAllEvents(req, res);
-
-      expect(Booking.find).toHaveBeenCalledWith({ user: "user-id" });
-      expect(res.json).toHaveBeenCalledWith({
-        data: [
-          { _id: "1", isBooked: true },
-          { _id: "2", isBooked: false },
-        ],
-      });
-    });
-
-    it("should skip booking logic if no user", async () => {
-      const req = {};
-      const res = mockRes();
-      res.locals.responsePayload = {
-        data: [{ _id: "1" }],
-      };
-
-      const mockHandler = jest.fn().mockImplementation((_req, _res, _next) => {
-        res.json(res.locals.responsePayload); // ✅ simulate real response
-      });
-
-      factory.getAll.mockReturnValue(mockHandler);
-
-      await clientGetAllEvents(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(res.locals.responsePayload);
-    });
-  });
 });

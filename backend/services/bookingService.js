@@ -71,8 +71,11 @@ exports.getMyBookings = asyncHandler(async (req, res) => {
 // ✅ Get a single booking (admin or user)
 exports.getBooking = factory.getOne(Booking, { path: "event" });
 
-// ✅ Admin: Get all bookings
-exports.getAllBookings = factory.getAll(Booking, "Booking", false);
+// ✅ Admin: Get all bookings with event and user details
+exports.getAllBookings = factory.getAll(Booking, "Booking", false, [
+  { path: "user" },
+  { path: "event" },
+]);
 
 // ✅ Delete booking
 exports.deleteBooking = asyncHandler(async (req, res, next) => {

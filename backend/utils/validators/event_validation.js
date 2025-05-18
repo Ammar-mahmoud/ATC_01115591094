@@ -20,7 +20,6 @@ exports.createEventValidator = [
 
   check("category")
   .optional()
-  .isUUID().withMessage("Invalid category ID")
   .custom(async (val) => {
     const exists = await Category.findById(val);
     if (!exists) {
@@ -83,13 +82,13 @@ exports.createEventValidator = [
 
 // ✅ Get Event by ID
 exports.getEventValidator = [
-  check("id").isUUID().withMessage("Invalid event ID format"),
+  check("id").notEmpty().withMessage("Invalid event ID format"),
   validatorMiddleware,
 ];
 
 // ✅ Update Event
 exports.updateEventValidator = [
-  check("id").isUUID().withMessage("Invalid event ID format"),
+  check("id").notEmpty().withMessage("Invalid event ID format"),
 
   check("name.en")
     .optional()
@@ -156,6 +155,6 @@ exports.updateEventValidator = [
 
 // ✅ Delete Event
 exports.deleteEventValidator = [
-  check("id").isUUID().withMessage("Invalid event ID format"),
+  check("id").notEmpty().withMessage("Invalid event ID format"),
   validatorMiddleware,
 ];
