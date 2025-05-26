@@ -1,6 +1,6 @@
 # Areeb-Task  
 Full-stack event booking system  
-
+Don't forget to read Areeb Task Submission.pdf pls
 ---
 
 ## 🚀 Getting Started – Backend Setup
